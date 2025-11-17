@@ -1,0 +1,442 @@
+{
+  "name": "Invoice Processing",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1WRTjknTfZ_NSEsHPL-QAjLZ6Ek7YqfYJ",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1WRTjknTfZ_NSEsHPL-QAjLZ6Ek7YqfYJ"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -608,
+        -16
+      ],
+      "id": "392bdd01-e0af-4d3a-a724-946b05a5bb1a",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "O5xnp7L8Cb03NANW",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        -16
+      ],
+      "id": "33c8ead7-877d-4d0f-81b8-7e049063135d",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Invoice Number",
+              "description": "the number of the invoice",
+              "required": true
+            },
+            {
+              "name": "Client Name",
+              "description": "name of the client",
+              "required": true
+            },
+            {
+              "name": "Client Email",
+              "description": "the client email",
+              "required": true
+            },
+            {
+              "name": "Client Address",
+              "description": "the address of the client ",
+              "required": true
+            },
+            {
+              "name": "Client Phone",
+              "description": "the client phone number",
+              "required": true
+            },
+            {
+              "name": "Total Amount",
+              "description": "the total amount",
+              "required": true
+            },
+            {
+              "name": "Invoice Date",
+              "type": "date",
+              "description": "the date of invoice",
+              "required": true
+            },
+            {
+              "name": "Due date",
+              "type": "date",
+              "description": "the due date of invoice"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        16,
+        -16
+      ],
+      "id": "5fa4ea10-4048-4a82-b214-b49e4e838bd5",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        112
+      ],
+      "id": "0e812d62-a392-450e-978c-cd509bd6e0bb",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "DDcheN4Msc8Qcyd5",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1n_-mCf1xeqei75WU9N6fNuGyslO3x39BiZCqoL3uO4A",
+          "mode": "list",
+          "cachedResultName": "Invoice DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1n_-mCf1xeqei75WU9N6fNuGyslO3x39BiZCqoL3uO4A/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1n_-mCf1xeqei75WU9N6fNuGyslO3x39BiZCqoL3uO4A/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Invoice Number": "={{ $json.output['Invoice Number'] }}",
+            "Client Name": "={{ $json.output['Client Name'] }}",
+            "Client Email": "={{ $json.output['Client Email'] }}",
+            "Client Address": "={{ $json.output['Client Address'] }}",
+            "Client Phone": "={{ $json.output['Client Phone'] }}",
+            "Total Amount": "={{ $json.output['Total Amount'] }}",
+            "Invoice Date": "={{ $json.output['Invoice Date'] }}",
+            "Due date": "={{ $json.output['Due date'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Invoice Number",
+              "displayName": "Invoice Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Client Name",
+              "displayName": "Client Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Client Email",
+              "displayName": "Client Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Client Address",
+              "displayName": "Client Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Client Phone",
+              "displayName": "Client Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total Amount",
+              "displayName": "Total Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Invoice Date",
+              "displayName": "Invoice Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Due date",
+              "displayName": "Due date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        368,
+        -16
+      ],
+      "id": "b649183f-e3bd-4b7c-82b7-f9cf0a7fe9f3",
+      "name": "update DB",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "nInEyMJ88XcaPDt1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -400,
+        -16
+      ],
+      "id": "89d83553-340e-4955-a7da-c70496f3be58",
+      "name": "Download Binary",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "O5xnp7L8Cb03NANW",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "=israrqaiser@gmail.com",
+        "subject": "={{ $json.output[0].content[0].text.Subject }}",
+        "emailType": "text",
+        "message": "={{ $json.output[0].content[0].text.Email }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        976,
+        128
+      ],
+      "id": "47ae279c-9712-4ec1-bd89-d316f08199f7",
+      "name": "Send Email",
+      "webhookId": "b1a8bcea-5a6a-4ea9-9cb5-1b115490db0e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "2OLMb0iHB7aKu2rz",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Invoice Number:{{ $('update DB').item.json['Invoice Number'] }}\nClient Name:{{ $('update DB').item.json['Client Name'] }}\nClient Address:{{ $('update DB').item.json['Client Address'] }}\nClient Email:{{ $('update DB').item.json['Client Email'] }}\nTotal Amount:{{ $('update DB').item.json['Total Amount'] }}\nInvoice Date:{{ $('update DB').item.json['Invoice Date'] }}\nDue date:{{ $('update DB').item.json['Due date'] }}"
+            },
+            {
+              "role": "system",
+              "content": "=# Overview\nyour are an email expert for green grass crops name rice crop. yor will receive invoice information. your job is to notify the internal billing  team that an invoice was received/sent.\n\n## Email\ninform the billing team of th invoice.let them know we have also updated this invoice in the database, and they can view it here:\nhttps://docs.google.com/spreadsheets/d/1n_-mCf1xeqei75WU9N6fNuGyslO3x39BiZCqoL3uO4A/edit?gid=0#gid=0\n\n## Output\nOutput the following parameters separately:\nSubject\nEmail"
+            }
+          ]
+        },
+        "simplify": "={{ true }}",
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_object"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        576,
+        48
+      ],
+      "id": "4722ba4a-8fde-4ce5-b804-12fb34dd5e9d",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "pMhjVU0lR3qFjqCy",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download Binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "update DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Binary": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update DB": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "64211164-8fc9-4209-92f0-9065658f5a60",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3dadd1c7f8d0704d3184939902a55100ecc9c301364920f694d8b8fcfd87ca7a"
+  },
+  "id": "2NmaW7pWDTnbLKDm",
+  "tags": []
+}
